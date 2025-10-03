@@ -38,6 +38,10 @@ class NoteCRUD(BaseCRUD):
         check = await self.check_ownership(session, note_id, user_id)
         if check is not None:
             return await self.delete(session, note_id)
+    async def get_global_notes(self, session: AsyncSession):
+        sqlr = (select(self.model).where(self.model.is_public == True))
+        notes_db = await session.execute(sqlr)
+        return notes_db.scalars().all()
 
 
 note_crud = NoteCRUD(Note)

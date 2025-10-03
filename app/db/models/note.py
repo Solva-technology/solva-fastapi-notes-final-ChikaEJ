@@ -16,3 +16,4 @@ class Note(Base):
     user: Mapped["User"] = relationship("User", back_populates="notes")
 
 
+
