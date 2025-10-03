@@ -1,7 +1,9 @@
 from contextlib import asynccontextmanager
 from datetime import datetime
 
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+from sqlalchemy.ext.asyncio import (async_sessionmaker,
+                                    AsyncSession,
+                                    create_async_engine)
 from sqlalchemy.orm import (
     DeclarativeBase,
     Mapped,
@@ -28,10 +30,9 @@ class Base(DeclarativeBase):
 
 engine = create_async_engine(settings.DATABASE_URL)
 
-AsyncSessionLocal = async_sessionmaker(engine, expire_on_commit=False)
+AsyncSessionLocal = async_sessionmaker(engine, class_=AsyncSession)
 
 
-@asynccontextmanager
 async def get_async_session():
     async with AsyncSessionLocal() as session:
         yield session

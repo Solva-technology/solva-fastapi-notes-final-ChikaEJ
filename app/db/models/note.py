@@ -4,7 +4,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.core.constants import MAX_LENGTH_CONTENT, MAX_LENGTH_TITLE
 from app.core.db import Base
 
-
 class Note(Base):
     title: Mapped[str] = mapped_column(String(MAX_LENGTH_TITLE), nullable=False)
     content: Mapped[str] = mapped_column(String(MAX_LENGTH_CONTENT), nullable=True)
