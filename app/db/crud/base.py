@@ -1,4 +1,5 @@
-from typing import Type, Generic, Optional, List
+from typing import Generic, List, Optional, Type
+
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -12,6 +13,7 @@ def db_transaction(func):
         except Exception:
             await session.rollback()
             raise
+
     return wrapper
 
 
@@ -28,7 +30,8 @@ class BaseCRUD(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         return result.scalars().all()
 
     @db_transaction
-    async def create(self, session: AsyncSession, data: CreateSchemaType) -> ModelType:
+    async def create(self, session: AsyncSession,
+                     data: CreateSchemaType) -> ModelType:
         obj_db = self.model(**data.model_dump())
         session.add(obj_db)
         await session.commit()
@@ -36,12 +39,14 @@ class BaseCRUD(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         return obj_db
 
     @db_transaction
-    async def update(self, session: AsyncSession, model_id: int, data: UpdateSchemaType) -> Optional[
+    async def update(self, session: AsyncSession, model_id: int,
+                     data: UpdateSchemaType) -> Optional[
         ModelType]:
         stmt = (
             update(self.model)
             .where(self.model.id == model_id)
-            .values(**data.model_dump(exclude_unset=True))  # обновляем только переданные поля
+            .values(**data.model_dump(
+                exclude_unset=True))
             .returning(self.model)
         )
         result = await session.execute(stmt)

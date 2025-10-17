@@ -3,8 +3,8 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.schemas.note import NoteUpdate
-from app.db.crud.base import BaseCRUD
 from app.core.base import Note
+from app.db.crud.base import BaseCRUD
 
 
 class NoteCRUD(BaseCRUD):
@@ -34,10 +34,12 @@ class NoteCRUD(BaseCRUD):
         if check is not None:
             return await self.update(session, note_id, data)
 
-    async def delete_own_note(self, session: AsyncSession, note_id: int, user_id: int):
+    async def delete_own_note(self, session: AsyncSession, note_id: int,
+                              user_id: int):
         check = await self.check_ownership(session, note_id, user_id)
         if check is not None:
             return await self.delete(session, note_id)
+
     async def get_global_notes(self, session: AsyncSession):
         sqlr = (select(self.model).where(self.model.is_public == True))
         notes_db = await session.execute(sqlr)

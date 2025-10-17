@@ -1,15 +1,9 @@
-from contextlib import asynccontextmanager
 from datetime import datetime
 
-from sqlalchemy.ext.asyncio import (async_sessionmaker,
-                                    AsyncSession,
+from sqlalchemy.ext.asyncio import (AsyncSession, async_sessionmaker,
                                     create_async_engine)
-from sqlalchemy.orm import (
-    DeclarativeBase,
-    Mapped,
-    declared_attr,
-    mapped_column,
-)
+from sqlalchemy.orm import (DeclarativeBase, Mapped, declared_attr,
+                            mapped_column)
 
 from app.core.config import settings
 

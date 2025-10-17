@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, status, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.schemas.note import NoteCreate, NoteRead, NoteUpdate
@@ -20,9 +20,9 @@ router = APIRouter()
     response_model_exclude_unset=True,
 )
 async def create_note(
-    data: NoteCreate,
-    session: AsyncSession = Depends(get_async_session),
-    user: User = Depends(current_user),
+        data: NoteCreate,
+        session: AsyncSession = Depends(get_async_session),
+        user: User = Depends(current_user),
 ):
     """
     Создание новой заметки.
@@ -42,8 +42,8 @@ async def create_note(
     status_code=status.HTTP_200_OK,
 )
 async def get_notes(
-    session: AsyncSession = Depends(get_async_session),
-    user: User = Depends(current_user),
+        session: AsyncSession = Depends(get_async_session),
+        user: User = Depends(current_user),
 ):
     """
     Получить список заметок.
@@ -62,9 +62,9 @@ async def get_notes(
     status_code=status.HTTP_200_OK,
 )
 async def get_note(
-    note_id: int,
-    session: AsyncSession = Depends(get_async_session),
-    user: User = Depends(current_user),
+        note_id: int,
+        session: AsyncSession = Depends(get_async_session),
+        user: User = Depends(current_user),
 ):
     """
     Получить заметку по ID.
@@ -74,10 +74,12 @@ async def get_note(
     """
     note = await note_crud.get(session, note_id)
     if not note:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Note not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail="Note not found")
 
     if not user.is_superuser and note.user_id != user.id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                            detail="Not enough permissions")
 
     return note
 
@@ -90,10 +92,10 @@ async def get_note(
     status_code=status.HTTP_200_OK,
 )
 async def update_note(
-    data: NoteUpdate,
-    note_id: int,
-    session: AsyncSession = Depends(get_async_session),
-    user: User = Depends(current_user),
+        data: NoteUpdate,
+        note_id: int,
+        session: AsyncSession = Depends(get_async_session),
+        user: User = Depends(current_user),
 ):
     """
     Обновление заметки.
@@ -102,7 +104,8 @@ async def update_note(
     - Суперпользователь может обновлять любые заметки.
     """
     if user.is_superuser:
-        return await note_crud.update(session=session, obj_id=note_id, obj_in=data)
+        return await note_crud.update(session=session, obj_id=note_id,
+                                      obj_in=data)
 
     return await note_crud.update_own_note(
         session=session,
@@ -117,9 +120,9 @@ async def update_note(
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def delete_note(
-    note_id: int,
-    session: AsyncSession = Depends(get_async_session),
-    user: User = Depends(current_user),
+        note_id: int,
+        session: AsyncSession = Depends(get_async_session),
+        user: User = Depends(current_user),
 ):
     """
     Удаление заметки по ID.
@@ -130,7 +133,8 @@ async def delete_note(
     if user.is_superuser:
         return await note_crud.delete(session=session, obj_id=note_id)
 
-    return await note_crud.delete_own_note(session=session, note_id=note_id, user_id=user.id)
+    return await note_crud.delete_own_note(session=session, note_id=note_id,
+                                           user_id=user.id)
 
 
 @router.get(
@@ -140,7 +144,7 @@ async def delete_note(
     dependencies=[Depends(current_user)]
 )
 async def get_global_notes(
-    session: AsyncSession = Depends(get_async_session)
+        session: AsyncSession = Depends(get_async_session)
 ):
     """
     Получить публичные заметки.
